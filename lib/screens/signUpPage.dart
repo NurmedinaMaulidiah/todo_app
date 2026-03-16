@@ -62,7 +62,7 @@ class _SignUpPageState extends State<SignUpPage> {
         );
 
         // Navigasi ke SuccessPage
-        Navigator.pushReplacementNamed(context, "/SuccessPage");
+        Navigator.pushReplacementNamed(context, "/HomePage");
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Gagal mendaftar! Coba lagi.")),

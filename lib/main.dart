@@ -11,6 +11,7 @@ import 'screens/success.dart';
 import 'services/auth_services.dart';
 import 'models/user_models.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'screens/homePage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
           "/SignInPage": (context) => SignInPage(),
           "/SignUpPage": (context) => SignUpPage(),
           "/SuccessPage": (context) => SuccessPage(),
+          "/HomePage": (context) => HomePage(),
         },
 
         initialRoute: "/IntroPage",
@@ -48,7 +50,7 @@ class MyApp extends StatelessWidget {
           stream: firebase_auth.FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return SuccessPage(); // Halaman setelah login
+              return HomePage(); // Halaman setelah login
             } else {
               return SignInPage();
             }

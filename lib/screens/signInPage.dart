@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_services.dart';
@@ -45,7 +43,7 @@ class _SignInPageState extends State<SignInPage> {
         );
 
         // Pindah ke SuccessPage
-        Navigator.pushReplacementNamed(context, "/SuccessPage");
+        Navigator.pushReplacementNamed(context, "/HomePage");
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Login gagal! Periksa email dan password.")),
