@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "781158779219",
+    "project_id": "projekdina-e7ecd",
+    "storage_bucket": "projekdina-e7ecd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781158779219:android:e0b54ae542acc47ab879a6",
+        "android_client_info": {
+          "package_name": "com.example.projek_dina"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU3q2DwcSP8LX0vyghlHQVrzzY4z_svck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
