@@ -43,7 +43,7 @@ dependencies:
   firebase_storage: ^11.5.3
   responsive_sizer: ^3.2.0
   flutter_launcher_icons: "^0.13.1"
-  intl: ^0.18.1 #UNTUK DATE FORMAT
+  intl: ^0.18.1 #UNTUK DATE FORMAT >> package tgl
 
 flutter_launcher_icons:
   android: "launcher_icon"
