@@ -11,7 +11,7 @@ class TodoService {
         .collection('users')
         .doc(userId)
         .collection('todos')
-        .orderBy('createdAt', descending: true)
+        .orderBy('dueDate', descending: false) //SORTING by DEADLINE
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => Todo.fromMap(doc.data(), doc.id)).toList());
