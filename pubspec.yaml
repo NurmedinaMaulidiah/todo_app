@@ -68,13 +68,14 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   fonts:
-    - family: Oddval
+    - family: Raleway
       fonts:
-      - asset : fonts/Oddval-SemiBold.otf
-      - asset : fonts/Oddval-SemiBoldItalic.otf
-    - family: dity
-      fonts:
-      - asset : fonts/dity.otf
+        - asset: fonts/Raleway-Bold.ttf
+          weight: 700
+        - asset: fonts/Raleway-SemiBold.ttf
+          weight: 600
+        - asset: fonts/Raleway-Medium.ttf
+          weight: 500
       
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

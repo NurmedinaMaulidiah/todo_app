@@ -12,6 +12,7 @@ import 'services/auth_services.dart';
 import 'models/user_models.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'screens/homePage.dart';
+import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,11 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+
+        //THEME MODE
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.dark,//defaultnya dark dulu
 
         // Routes
         routes: {
