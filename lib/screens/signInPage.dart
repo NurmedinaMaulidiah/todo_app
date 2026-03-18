@@ -1,127 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
-// import '../services/auth_services.dart';
-// import '../models/user_models.dart';
-
-// class SignInPage extends StatefulWidget {
-//   @override
-//   _SignInPageState createState() => _SignInPageState();
-// }
-
-// class _SignInPageState extends State<SignInPage> {
-//   final _formKey = GlobalKey<FormState>();
-//   final TextEditingController _controllerEmail = TextEditingController();
-//   final TextEditingController _controllerPassword = TextEditingController();
-//   bool _loading = false;
-
-//   @override
-//   void dispose() {
-//     _controllerEmail.dispose();
-//     _controllerPassword.dispose();
-//     super.dispose();
-//   }
-
-//   void handleSignIn() async {
-//     if (!_formKey.currentState!.validate()) return;
-
-//     final email = _controllerEmail.text.trim();
-//     final password = _controllerPassword.text.trim();
-
-//     setState(() => _loading = true);
-
-//     try {
-//       // Panggil AuthServices
-//       var user = await Provider.of<AuthServices>(context, listen: false)
-//           .signIn(email, password);
-
-//       if (user != null) {
-//         // Update UserModel
-//         Provider.of<UserModel>(context, listen: false).setUser(
-//           fullName: user.fullName,
-//           username: user.username,
-//           email: user.email,
-//         );
-
-//         // Pindah ke SuccessPage
-//         Navigator.pushReplacementNamed(context, "/HomePage");
-//       } else {
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(content: Text("Login gagal! Periksa email dan password.")),
-//         );
-//       }
-//     } catch (e) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text("Terjadi kesalahan: $e")),
-//       );
-//     }
-
-//     setState(() => _loading = false);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       // appBar: AppBar(
-//       //   title: Text("Sign In"),
-//       //   backgroundColor: Color(0xFF8AB0AB),
-//       // ),
-//       body: Padding(
-//         padding: EdgeInsets.all(24),
-//         child: Form(
-//           key: _formKey,
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               TextFormField(
-//                 controller: _controllerEmail,
-//                 keyboardType: TextInputType.emailAddress,
-//                 decoration: InputDecoration(labelText: "Email"),
-//                 validator: (value) =>
-//                     value == null || value.isEmpty ? "Masukkan email" : null,
-//               ),
-//               SizedBox(height: 16),
-//               TextFormField(
-//                 controller: _controllerPassword,
-//                 obscureText: true,
-//                 decoration: InputDecoration(labelText: "Password"),
-//                 validator: (value) =>
-//                     value == null || value.isEmpty ? "Masukkan password" : null,
-//               ),
-//               SizedBox(height: 32),
-//               SizedBox(
-//                 width: double.infinity,
-//                 child: ElevatedButton(
-//                   onPressed: _loading ? null : handleSignIn,
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: Color(0xFF8AB0AB),
-//                     padding: EdgeInsets.symmetric(vertical: 14),
-//                   ),
-//                   child: _loading
-//                       ? SizedBox(
-//                           width: 20,
-//                           height: 20,
-//                           child: CircularProgressIndicator(
-//                             color: Colors.white,
-//                             strokeWidth: 2,
-//                           ),
-//                         )
-//                       : Text("Sign In"),
-//                 ),
-//               ),
-//               SizedBox(height: 16),
-//               TextButton(
-//                 onPressed: () {
-//                   Navigator.pushNamed(context, "/SignUpPage");
-//                 },
-//                 child: Text("Belum punya akun? Sign Up"),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/theme/app_theme.dart';
@@ -147,8 +23,16 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void handleSignIn() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Mohon isi email dan password"),
+          backgroundColor: Colors.red,
+        ),
+      );
 
+      return;
+    }
     final email = _controllerEmail.text.trim();
     final password = _controllerPassword.text.trim();
 
@@ -159,25 +43,110 @@ class _SignInPageState extends State<SignInPage> {
           .signIn(email, password);
 
       if (user != null) {
-        Provider.of<UserModel>(context, listen: false).setUser(
-          fullName: user.fullName,
-          username: user.username,
-          email: user.email,
-        );
-        Navigator.pushReplacementNamed(context, "/HomePage");
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Login gagal! Periksa email dan password.")),
-        );
+          _showLoginSuccessDialog();
+        }
+      } catch (e) {
+        if (e.toString().contains("user-not-found")) {
+          _showUserNotFoundDialog();
+        } else if (e.toString().contains("wrong-password")) {
+          _showWrongPasswordDialog();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Login gagal: $e")),
+          );
+        }
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Terjadi kesalahan: $e")),
-      );
+      setState(() => _loading = false);
     }
 
-    setState(() => _loading = false);
-  }
+    //berhasil login
+    void _showLoginSuccessDialog() {
+
+  showDialog(
+    context: context,
+    builder: (context) {
+
+      return AlertDialog(
+        title: Text("Login Berhasil"),
+        content: Text("Selamat datang kembali!"),
+        actions: [
+
+          TextButton(
+            onPressed: () {
+
+              Navigator.pop(context);
+
+              Navigator.pushReplacementNamed(context, "/HomePage");
+
+            },
+            child: Text("OK"),
+          )
+
+        ],
+      );
+
+    },
+  );
+}
+
+//email ga terdaftar
+void _showUserNotFoundDialog() {
+
+  showDialog(
+    context: context,
+    builder: (context) {
+
+      return AlertDialog(
+        title: Text("Akun Tidak Ditemukan"),
+        content: Text("Email belum terdaftar. Silakan daftar terlebih dahulu."),
+        actions: [
+
+          TextButton(
+            onPressed: () {
+
+              Navigator.pop(context);
+
+              Navigator.pushReplacementNamed(context, "/SignUpPage");
+
+            },
+            child: Text("Daftar"),
+          )
+
+        ],
+      );
+
+    },
+  );
+}
+
+//pw salah
+void _showWrongPasswordDialog() {
+
+  showDialog(
+    context: context,
+    builder: (context) {
+
+      return AlertDialog(
+        title: Text("Password Salah"),
+        content: Text("Password yang Anda masukkan salah."),
+        actions: [
+
+          TextButton(
+            onPressed: () {
+
+              Navigator.pop(context);
+
+            },
+            child: Text("Coba Lagi"),
+          )
+
+        ],
+      );
+
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -192,8 +161,8 @@ class _SignInPageState extends State<SignInPage> {
             padding: EdgeInsets.symmetric(vertical: lebar * 0.08),
             child: Container(
               padding: EdgeInsets.all(24),
-              margin: EdgeInsets.only(top: 200) ,
-              height: MediaQuery.of(context).size.height, // 80% tinggi layar
+              margin: EdgeInsets.only(top: 200), //atur jarak atas box radient
+              height: MediaQuery.of(context).size.height, //atur box gradient
              decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
               topLeft: Radius.circular(30),
@@ -212,7 +181,7 @@ class _SignInPageState extends State<SignInPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    SizedBox(height: tinggi * 0.05),
+                    SizedBox(height: tinggi * 0.05), //atur jarak atas tulisan sign in
                     Text(
                       "Sign In",
                       style: Theme.of(context)
@@ -230,8 +199,17 @@ class _SignInPageState extends State<SignInPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? "Masukkan email" : null,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Email wajib diisi";
+                        }
+
+                        if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                          return "Format email tidak valid";
+                        }
+
+                        return null;
+                      }
                     ),
                     SizedBox(height: tinggi * 0.05),
                     TextFormField(
@@ -243,9 +221,13 @@ class _SignInPageState extends State<SignInPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      validator: (value) => value == null || value.isEmpty
-                          ? "Masukkan password"
-                          : null,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Password wajib diisi";
+                        }
+
+                        return null;
+                      }
                     ),
                     SizedBox(height: tinggi * 0.04),
                     SizedBox(
@@ -279,7 +261,7 @@ class _SignInPageState extends State<SignInPage> {
                         Navigator.pushNamed(context, "/SignUpPage");
                       },
                       child: Text(
-                        "Belum punya akun? Sign Up",
+                        "Don’t have an Account? Sign Up",
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           fontSize: lebar * 0.04,

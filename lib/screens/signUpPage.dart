@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/theme/app_theme.dart';
 import '../services/auth_services.dart';
 import '../models/user_models.dart';
 
@@ -31,7 +32,17 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void handleSignUp() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Mohon isi semua data dengan benar"),
+        backgroundColor: Colors.red,
+      ),
+    );
+
+    return;
+  }
 
     final fullName = _controllerFullName.text.trim();
     final username = _controllerUserName.text.trim();
@@ -48,86 +59,245 @@ class _SignUpPageState extends State<SignUpPage> {
 
     setState(() => _loading = true);
 
-    try {
-      // Memanggil AuthServices untuk daftar user di Firebase
-      var newUser = await Provider.of<AuthServices>(context, listen: false)
-          .signUp(fullName, username, email, password, confirmPassword);
+try {
 
-      if (newUser != null) {
-        // Update UserModel
-        Provider.of<UserModel>(context, listen: false).setUser(
-          fullName: fullName,
-          username: username,
-          email: email,
-        );
+    var newUser = await Provider.of<AuthServices>(context, listen: false)
+        .signUp(fullName, username, email, password, confirmPassword);
 
-        // Navigasi ke SuccessPage
-        Navigator.pushReplacementNamed(context, "/HomePage");
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Gagal mendaftar! Coba lagi.")),
-        );
-      }
-    } catch (e) {
+    if (newUser != null) {
+
+      _showSuccessDialog();
+
+    }
+
+  } catch (e) {
+
+    if (e.toString().contains("email-already-in-use")) {
+
+      _showEmailExistDialog();
+
+    } else {
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Terjadi kesalahan: $e")),
       );
+
     }
 
-    setState(() => _loading = false);
   }
+
+  setState(() => _loading = false);
+}
+//sukses sign up
+void _showSuccessDialog() {
+
+  showDialog(
+    context: context,
+    builder: (context) {
+
+      return AlertDialog(
+        title: Text("Registrasi Berhasil"),
+        content: Text("Akun berhasil dibuat. Silakan login."),
+        actions: [
+
+          TextButton(
+            onPressed: () {
+
+              Navigator.pop(context);
+
+              Navigator.pushReplacementNamed(context, "/SignInPage");
+
+            },
+            child: Text("OK"),
+          )
+
+        ],
+      );
+
+    },
+  );
+}
+//email/akun sdh terdaftar
+void _showEmailExistDialog() {
+
+  showDialog(
+    context: context,
+    builder: (context) {
+
+      return AlertDialog(
+        title: Text("Akun Sudah Terdaftar"),
+        content: Text("Email ini sudah digunakan. Silakan login."),
+        actions: [
+
+          TextButton(
+            onPressed: () {
+
+              Navigator.pop(context);
+
+              Navigator.pushReplacementNamed(context, "/SignInPage");
+
+            },
+            child: Text("Login"),
+          )
+
+        ],
+      );
+
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
+    final lebar = MediaQuery.of(context).size.width;
+    final tinggi = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Sign Up"),
-        backgroundColor: Color(0xFF8AB0AB),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(24),
-        child: Form(
+    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(vertical: lebar * 0.08),
+            child: Container(
+              padding: EdgeInsets.all(24),
+              margin: EdgeInsets.only(top: 50) , //atur jarak atas box radient
+              height: MediaQuery.of(context).size.height, //tinggi box gradient
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+            gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+                AppTheme.gradientGreen,          // hijau pastel tema utama
+                AppTheme.darkBg, // lebih gelap untuk transisi
+              ],
+            ),
+          ),
+            child: Form(
           key: _formKey,
           child: ListView(
             children: [
+              SizedBox(height: tinggi * 0.02), //atur jarak atas tulisan sign in
+                    Text(
+                      "Sign Up",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(
+                            fontSize: lebar * 0.07,
+                            ),
+                    ),
+              SizedBox(height: tinggi * 0.05),
               TextFormField(
                 controller: _controllerFullName,
-                decoration: InputDecoration(labelText: "Full Name"),
-                validator: (value) =>
-                    value == null || value.isEmpty ? "Masukkan nama lengkap" : null,
+                decoration: InputDecoration(
+                  labelText: "Full Name",
+                  border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                validator: (value) {
+
+                  if (value == null || value.isEmpty) {
+                    return "Nama lengkap wajib diisi";
+                  }
+
+                  if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                    return "Nama hanya boleh huruf";
+                  }
+
+                  return null;
+                },
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _controllerUserName,
-                decoration: InputDecoration(labelText: "Username"),
-                validator: (value) =>
-                    value == null || value.isEmpty ? "Masukkan username" : null,
+                decoration: InputDecoration(
+                  labelText: "Username",
+                  border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Username wajib diisi";
+                  }
+
+                  return null;
+                },
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _controllerEmail,
-                decoration: InputDecoration(labelText: "Email"),
+                decoration: InputDecoration(
+                  labelText: "Email",
+                  border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  ),
+                  ),
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) =>
-                    value == null || value.isEmpty ? "Masukkan email" : null,
+                validator: (value) {
+
+                  if (value == null || value.isEmpty) {
+                    return "Email wajib diisi";
+                  }
+
+                  if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                    return "Format email tidak valid";
+                  }
+
+                  return null;
+                },
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _controllerPassword,
                 obscureText: true,
-                decoration: InputDecoration(labelText: "Password"),
-                validator: (value) =>
-                    value == null || value.isEmpty ? "Masukkan password" : null,
+                decoration: InputDecoration(
+                  labelText: "Password",
+                  border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                  ),
+                validator: (value) {
+
+                  if (value == null || value.isEmpty) {
+                    return "Password wajib diisi";
+                  }
+
+                  if (value.length < 6) {
+                    return "Password minimal 6 karakter";
+                  }
+
+                  return null;
+                },
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _controllerConfirmPw,
                 obscureText: true,
-                decoration: InputDecoration(labelText: "Confirm Password"),
-                validator: (value) =>
-                    value == null || value.isEmpty ? "Konfirmasi password" : null,
+                decoration: InputDecoration(
+                  labelText: "Confirm Password",
+                  border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                  ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Konfirmasi password wajib diisi";
+                  }
+
+                  if (value != _controllerPassword.text) {
+                    return "Password tidak sama";
+                  }
+
+                  return null;
+                },
               ),
-              SizedBox(height: 32),
+              SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -148,17 +318,22 @@ class _SignUpPageState extends State<SignUpPage> {
                       : Text("Sign Up"),
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 25),
               TextButton(
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, "/SignInPage");
                 },
-                child: Text("Sudah punya akun? Sign In"),
+                child: Text("Already have an Account? Sign In"),
               ),
             ],
           ),
         ),
+            ),
+          ),
+        ),
+      
       ),
-    );
+   );
+    
   }
 }

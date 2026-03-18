@@ -26,6 +26,7 @@ class AuthServices extends ChangeNotifier {
         'username': username,
         'email': email,
       });
+      await _auth.signOut();
 
       return models.UserModel(
         fullName: fullName,
