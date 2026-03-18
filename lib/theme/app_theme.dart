@@ -91,5 +91,32 @@ class AppTheme {
         ),
       ),
     ),
+     textTheme: TextTheme(
+      headlineLarge: TextStyle(
+        fontSize: 100,
+        fontWeight: FontWeight.bold,
+      ),
+
+      headlineMedium: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+
+      titleMedium: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+      ),
+
+      bodyMedium: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+      ),
+
+      bodySmall: TextStyle(
+        fontSize: 9,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+
   );
 }
