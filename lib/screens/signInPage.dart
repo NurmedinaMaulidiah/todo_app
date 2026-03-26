@@ -4,26 +4,26 @@ import 'package:todo_app/theme/app_theme.dart';
 import '../services/auth_services.dart';
 import '../models/user_models.dart';
 
-class SignInPage extends StatefulWidget {
+class SignInPage extends StatefulWidget { //statefull karena ada perubahan state kaya loading dan input form
   @override
-  _SignInPageState createState() => _SignInPageState();
+  _SignInPageState createState() => _SignInPageState(); //// Membuat state untuk halaman SignIn agar bisa menyimpan data input & status loading
 }
-
-class _SignInPageState extends State<SignInPage> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _controllerEmail = TextEditingController();
+//state clasa untuk halaman sign in page (semua data bisa berubah disini (email/pw) disimpaan dan dikelola)
+class _SignInPageState extends State<SignInPage> { //pake state karena statefull
+  final _formKey = GlobalKey<FormState>(); //formkey utk validasi email dan pw
+  final TextEditingController _controllerEmail = TextEditingController(); //controller email dan pw utk nyimpan input user
   final TextEditingController _controllerPassword = TextEditingController();
-  bool _loading = false;
+  bool _loading = false; //menandai apakah proses login sedang berjalan, supaya tombol disable saat loading.
 
   @override
   void dispose() {
-    _controllerEmail.dispose();
+    _controllerEmail.dispose(); //berishkan controller email biaar ga leak
     _controllerPassword.dispose();
     super.dispose();
   }
-
+//fungsi utama utk sign in
   void handleSignIn() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_formKey.currentState!.validate()) { // Cek validasi form, jika tidak valid tampilkan snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Mohon isi email dan password"),
@@ -31,21 +31,21 @@ class _SignInPageState extends State<SignInPage> {
         ),
       );
 
-      return;
+      return;// Hentikan proses jika form tidak valid
     }
-    final email = _controllerEmail.text.trim();
+    final email = _controllerEmail.text.trim();  // Ambil input dari user
     final password = _controllerPassword.text.trim();
 
-    setState(() => _loading = true);
+    setState(() => _loading = true); // Tampilkan loading spinner
 
-    try {
+    try {// Panggil service login melalui Provider AuthServices
       var user = await Provider.of<AuthServices>(context, listen: false)
           .signIn(email, password);
 
       if (user != null) {
-          _showLoginSuccessDialog();
+          _showLoginSuccessDialog();// Tampilkan dialog login berhasil
         }
-      } catch (e) {
+      } catch (e) {  // Tangani error login
         if (e.toString().contains("user-not-found")) {
           _showUserNotFoundDialog();
         } else if (e.toString().contains("wrong-password")) {
@@ -56,11 +56,11 @@ class _SignInPageState extends State<SignInPage> {
           );
         }
       }
-      setState(() => _loading = false);
+      setState(() => _loading = false); //matikan loading spinner stelah selesai
     }
 
-    //berhasil login
-    void _showLoginSuccessDialog() {
+    // Dialog login sukses
+void _showLoginSuccessDialog() {
 
   showDialog(
     context: context,
@@ -74,9 +74,9 @@ class _SignInPageState extends State<SignInPage> {
           TextButton(
             onPressed: () {
 
-              Navigator.pop(context);
+              Navigator.pop(context); //Navigator.pop digunakan untuk menutup halaman atau dialog saat ini dan kembali ke halaman sebelumnya.
 
-              Navigator.pushReplacementNamed(context, "/HomePage");
+              Navigator.pushReplacementNamed(context, "/HomePage"); //navigasi ke homepage jika berhasil login
 
             },
             child: Text("OK"),
@@ -89,7 +89,7 @@ class _SignInPageState extends State<SignInPage> {
   );
 }
 
-//email ga terdaftar
+// Dialog jika email tidak ditemukan
 void _showUserNotFoundDialog() {
 
   showDialog(
@@ -119,7 +119,7 @@ void _showUserNotFoundDialog() {
   );
 }
 
-//pw salah
+// Dialog jika pw salah
 void _showWrongPasswordDialog() {
 
   showDialog(
@@ -150,15 +150,15 @@ void _showWrongPasswordDialog() {
 
   @override
   Widget build(BuildContext context) {
-    final lebar = MediaQuery.of(context).size.width;
-    final tinggi = MediaQuery.of(context).size.height;
+    final lebar = MediaQuery.of(context).size.width; //ambil lebar layar
+    final tinggi = MediaQuery.of(context).size.height; //ambil tinggi layar
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Background default
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(vertical: lebar * 0.08),
+            padding: EdgeInsets.symmetric(vertical: lebar * 0.08), // Jarak atas bawah scroll
             child: Container(
               padding: EdgeInsets.all(24),
               margin: EdgeInsets.only(top: 200), //atur jarak atas box radient
@@ -178,7 +178,7 @@ void _showWrongPasswordDialog() {
             ),
           ),
               child: Form(
-                key: _formKey,
+                key: _formKey, // Hubungkan form dengan key validasi
                 child: Column(
                   children: [
                     SizedBox(height: tinggi * 0.05), //atur jarak atas tulisan sign in
@@ -187,7 +187,7 @@ void _showWrongPasswordDialog() {
                       style: Theme.of(context)
                           .textTheme
                           .headlineMedium
-                          ?.copyWith(fontSize: lebar * 0.07),
+                          ?.copyWith(fontSize: lebar * 0.07), // Ukuran font responsif
                     ),
                     SizedBox(height: tinggi * 0.04),
                     TextFormField(
@@ -199,7 +199,7 @@ void _showWrongPasswordDialog() {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      validator: (value) {
+                      validator: (value) { // Validasi email
                         if (value == null || value.isEmpty) {
                           return "Email wajib diisi";
                         }
@@ -213,8 +213,8 @@ void _showWrongPasswordDialog() {
                     ),
                     SizedBox(height: tinggi * 0.05),
                     TextFormField(
-                      controller: _controllerPassword,
-                      obscureText: true,
+                      controller: _controllerPassword, // Controller password
+                      obscureText: true, // Sembunyikan karakter password
                       decoration: InputDecoration(
                         labelText: "Password",
                         border: OutlineInputBorder(
@@ -234,7 +234,7 @@ void _showWrongPasswordDialog() {
                       width: double.infinity,
                       height: tinggi * 0.065,
                       child: ElevatedButton(
-                        onPressed: _loading ? null : handleSignIn,
+                        onPressed: _loading ? null : handleSignIn, // Tombol disable saat loading
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.primary,
                           shape: RoundedRectangleBorder(
@@ -258,7 +258,7 @@ void _showWrongPasswordDialog() {
                     SizedBox(height: tinggi * 0.02),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, "/SignUpPage");
+                        Navigator.pushNamed(context, "/SignUpPage"); // Navigasi ke SignUpPage jika user belum punya aku
                       },
                       child: Text(
                         "Don’t have an Account? Sign Up",

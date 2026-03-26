@@ -5,12 +5,12 @@ import 'package:todo_app/screens/Introduction_screen.dart';
 import '../theme/app_theme.dart';
 
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatelessWidget {//ambil user yg sedang login di firebase authentication
   final user = FirebaseAuth.instance.currentUser;
 
   // Function untuk mengambil data user dari Firestore
-  Future<Map<String, dynamic>?> getUserData() async {
-    if (user != null) {
+  Future<Map<String, dynamic>?> getUserData() async { //Fungsi getUserData() untuk mengambil data user dari Firestore collection users berdasarkan UID.
+    if (user != null) {//jika user ga login maka null
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
@@ -29,7 +29,7 @@ class ProfilePage extends StatelessWidget {
         title: Text("Profile"),
       ),
 
-      body: Container(
+      body: Container( //bg gradasi
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -41,15 +41,15 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
 
-        child: FutureBuilder(
-          future: getUserData(),
+        child: FutureBuilder( //futurebuilder digunakan untuk menunggu data user dari Firestore.
+          future: getUserData(), //Akan rebuild otomatis setelah data tersedia.
           builder: (context, snapshot) {
 
             if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator()); //Tampilkan loading spinner sementara data belum tersedia.
             }
 
-            var userData = snapshot.data as Map<String, dynamic>;
+            var userData = snapshot.data as Map<String, dynamic>;//Simpan data user dari snapshot ke userData
 
             return Padding(
               padding: const EdgeInsets.all(20),
@@ -81,10 +81,10 @@ class ProfilePage extends StatelessWidget {
                         ListTile(
                           leading: Icon(Icons.account_circle),
                           title: Text("Username"),
-                          subtitle: Text(userData['username'] ?? "-"),
+                          subtitle: Text(userData['username'] ?? "-"),//nampilkan data username yg disimpan di userData
                         ),
 
-                        Divider(),
+                        Divider(),//garis pemisah per data
 
                         // FULL NAME
                         ListTile(
@@ -122,9 +122,9 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                      onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
+                        await FirebaseAuth.instance.signOut(); //proses logout
 
-                        Navigator.pushAndRemoveUntil(
+                        Navigator.pushAndRemoveUntil( //Setelah logout, navigasi ke halaman IntroductionPage dan hapus semua history halaman sebelumnya supaya user tidak bisa back.
                           context,
                           MaterialPageRoute(builder: (context) => IntroductionPage()),
                           (route) => false,

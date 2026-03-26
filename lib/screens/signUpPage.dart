@@ -6,15 +6,15 @@ import 'package:todo_app/theme/app_theme.dart';
 import '../services/auth_services.dart';
 import '../models/user_models.dart';
 
-class SignUpPage extends StatefulWidget {
+class SignUpPage extends StatefulWidget { //statefull karna ada perubahan dalam form
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
-
+// State untuk SignUpPage, menyimpan input, loading, dan validasi form
 class _SignUpPageState extends State<SignUpPage> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(); //keyform utk validasi email dan pw
   bool _loading = false;
-
+// Controller untuk menangkap input user
   final TextEditingController _controllerFullName = TextEditingController();
   final TextEditingController _controllerUserName = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();
@@ -22,7 +22,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _controllerConfirmPw = TextEditingController();
 
   @override
-  void dispose() {
+  void dispose() {// Hapus controller saat widget dihapus agar tidak memory leak
     _controllerFullName.dispose();
     _controllerUserName.dispose();
     _controllerEmail.dispose();
@@ -31,8 +31,8 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-  void handleSignUp() async {
-    if (!_formKey.currentState!.validate()) {
+  void handleSignUp() async {// Fungsi utama untuk menangani proses registrasi
+    if (!_formKey.currentState!.validate()) {// Jika form tidak valid, tampilkan snackbar error
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -44,40 +44,40 @@ class _SignUpPageState extends State<SignUpPage> {
     return;
   }
 
-    final fullName = _controllerFullName.text.trim();
+    final fullName = _controllerFullName.text.trim(); // trim utk mengambil input user dan menghapus spasi di awal/akhir, sedangkan
     final username = _controllerUserName.text.trim();
     final email = _controllerEmail.text.trim();
     final password = _controllerPassword.text.trim();
     final confirmPassword = _controllerConfirmPw.text.trim();
 
-    if (password != confirmPassword) {
+    if (password != confirmPassword) {// Validasi password dan confirm password harus sama
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Password dan Confirm Password tidak sama")),
       );
       return;
     }
 
-    setState(() => _loading = true);
+    setState(() => _loading = true); // tampilkan loading spinner
 
-try {
+try {// Panggil AuthServices untuk registrasi
 
     var newUser = await Provider.of<AuthServices>(context, listen: false)
         .signUp(fullName, username, email, password, confirmPassword);
 
     if (newUser != null) {
 
-      _showSuccessDialog();
+      _showSuccessDialog();// Jika berhasil registrasi, tampilkan dialog sukses
 
     }
 
   } catch (e) {
-
+ // Jika email sudah terdaftar, tampilkan dialog khusus
     if (e.toString().contains("email-already-in-use")) {
 
       _showEmailExistDialog();
 
     } else {
-
+// Error lain ditampilkan via snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Terjadi kesalahan: $e")),
       );
@@ -86,9 +86,9 @@ try {
 
   }
 
-  setState(() => _loading = false);
+  setState(() => _loading = false);// hilangkan loading spinner
 }
-//sukses sign up
+// Dialog jika registrasi sukses
 void _showSuccessDialog() {
 
   showDialog(
@@ -117,7 +117,7 @@ void _showSuccessDialog() {
     },
   );
 }
-//email/akun sdh terdaftar
+ // Dialog jika email sudah terdaftar
 void _showEmailExistDialog() {
 
   showDialog(
@@ -177,7 +177,7 @@ void _showEmailExistDialog() {
             ),
           ),
             child: Form(
-          key: _formKey,
+          key: _formKey, // key form
           child: ListView(
             children: [
               SizedBox(height: tinggi * 0.02), //atur jarak atas tulisan sign in
@@ -186,7 +186,7 @@ void _showEmailExistDialog() {
                       style: Theme.of(context)
                           .textTheme
                           .headlineMedium
-                          ?.copyWith(
+                          ?.copyWith( //menyalin style teks dari theme tapi mengubah ukuran font agar responsif.
                             fontSize: lebar * 0.07,
                             ),
                     ),
