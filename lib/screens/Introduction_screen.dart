@@ -4,13 +4,13 @@ import 'signUpPage.dart';
 
 class IntroductionPage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {// proses ambil ukuran layar untuk responsive design
     final lebar = MediaQuery.of(context).size.width;
     final tinggi = MediaQuery.of(context).size.height;
 
     return Scaffold(
   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-  body: SafeArea(
+  body: SafeArea( // PROSES SAFEAERA supaya konten tidak ketutupan notch / status bar
     child: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -19,7 +19,7 @@ class IntroductionPage extends StatelessWidget {
           // LOGO
           Image.asset(
             'assets/logo.png',
-            width: lebar * 0.8,
+            width: lebar * 0.8, //ukuran responsif
           ),
 
           SizedBox(height: tinggi * 0.04),
@@ -29,7 +29,7 @@ class IntroductionPage extends StatelessWidget {
             "SAGENA APPS",
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-              fontSize: lebar * 0.09,
+              fontSize: lebar * 0.09, // proses ukuran font responsif
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
               color: Theme.of(context).colorScheme.primary,

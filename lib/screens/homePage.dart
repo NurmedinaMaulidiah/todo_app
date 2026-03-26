@@ -1,3 +1,4 @@
+//untuk crud todo
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:todo_app/screens/profilePage.dart';
@@ -12,16 +13,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final TodoService _todoService = TodoService();
-  final TextEditingController _controller = TextEditingController();
-  final user = FirebaseAuth.instance.currentUser;
+  final TodoService _todoService = TodoService(); // PROSES akses service To-Do
+  final TextEditingController _controller = TextEditingController(); // PROSES ambil input teks To-Do
+  final user = FirebaseAuth.instance.currentUser; // PROSES ambil user login saat ini
   DateTime? selectedDate; //untuk sleect tgl
   TimeOfDay? selectedTime; //utk select jam
 
 
   @override
   Widget build(BuildContext context) {
-    if (user == null) {
+    if (user == null) {// PROSES cek user login, kalau null bisa handle redirect (opsional)
       // return Scaffold(
       //   body: Center(child: Text("User belum login")),
       // );
@@ -62,7 +63,7 @@ decoration: BoxDecoration(
   child: Column(
   children: [
 
-    Padding(
+    Padding(// PROSES INPUT TODO
       padding: EdgeInsets.all(12),
       child: Column(
         children: [
@@ -79,9 +80,9 @@ decoration: BoxDecoration(
 
           SizedBox(height: 15),
 
-          Row(
+          Row(// PROSES PILIH DATE & TIME
             children: [
-              Expanded(child: 
+              Expanded(child: // BUTTON SELECT DATE
               ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.pressedColor, // warna background tombol
@@ -99,16 +100,16 @@ decoration: BoxDecoration(
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
               onPressed: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: selectedDate ?? DateTime.now(),
-                  firstDate: DateTime(2023),
-                  lastDate: DateTime(2100),
+                final picked = await showDatePicker(// PROSES pilih tanggal Memunculkan date picker (kalender popup) untuk user pilih tanggal.
+                  context: context, //Dibutuhkan Flutter untuk tahu di halaman mana date picker ditampilkan.
+                  initialDate: selectedDate ?? DateTime.now(), //tampilkan tgl hari ini
+                  firstDate: DateTime(2023), //Tanggal paling awal yang bisa dipilih user
+                  lastDate: DateTime(2100), //Tanggal paling akhir yang bisa dipilih use
                 );
 
-                if (picked != null) {
+                if (picked != null) {//Mengecek apakah user benar-benar memilih tanggal. kalo ga null
                   setState(() {
-                    selectedDate = picked;
+                    selectedDate = picked; //Simpan tanggal yang dipilih ke state supaya UI otomatis update menampilkan tanggal terpilih.
                   });
                 }
               },
@@ -116,7 +117,7 @@ decoration: BoxDecoration(
           ),
           SizedBox(width: 10,),
           Expanded(
-      child: ElevatedButton.icon(
+      child: ElevatedButton.icon(// BUTTON SELECT TIME
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.pressedColor,
           foregroundColor: Colors.white,
@@ -133,12 +134,12 @@ decoration: BoxDecoration(
           style: TextStyle(fontWeight: FontWeight.w500),
         ),
               onPressed: () async {
-                final picked = await showTimePicker(
+                final picked = await showTimePicker( //munculkan pop up jam
                   context: context,
-                  initialTime: selectedTime ?? TimeOfDay.now(),
+                  initialTime: selectedTime ?? TimeOfDay.now(),//pakai jam skrg, kalau belum pilih pakai jam sekarang
                 );
-                if (picked != null) {
-                  setState(() {
+                if (picked != null) {//user memilih jam atau batal.
+                  setState(() {//simpan jam yang dipilih ke state supaya UI update.
                     selectedTime = picked;
                       });
                     }
@@ -156,7 +157,7 @@ decoration: BoxDecoration(
                     onPressed: () async {
 
         // VALIDASI TODO KOSONG
-        if (_controller.text.trim().isEmpty) {
+        if (_controller.text.trim().isEmpty) { //cek tgl masi kosong kah
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -173,7 +174,7 @@ decoration: BoxDecoration(
 
           final now = DateTime.now();
 
-          if (selectedDate!.isBefore(DateTime(now.year, now.month, now.day))) {
+          if (selectedDate!.isBefore(DateTime(now.year, now.month, now.day))) { //cek tgl seblm hari ini
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -211,7 +212,7 @@ decoration: BoxDecoration(
                   selectedTime!.minute,
                 );
 
-                if (selectedDateTime.isBefore(now)) {
+                if (selectedDateTime.isBefore(now)) { //Cek jam yang dipilih tidak boleh lewat dari sekarang.
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -266,7 +267,7 @@ decoration: BoxDecoration(
     ),
 
     Expanded(
-      child: StreamBuilder<List<Todo>>(
+      child: StreamBuilder<List<Todo>>( //list todo
         stream: _todoService.getTodos(user!.uid),
         builder: (context, snapshot) {
 
@@ -313,33 +314,33 @@ decoration: BoxDecoration(
             return Center(child: Text("Belum ada To-Do"));
           }
 
-         //GROUPING 
-         return ListView(
+         // PROSES GROUPING TODO 
+         return ListView( //Widget scrollable untuk menampilkan daftar todo.
           children: [
 
-            if (overdueTodos.isNotEmpty) ...[
+            if (overdueTodos.isNotEmpty) ...[ //tampilkan section OVERDUE hanya kalau ada datanya.
               _buildSectionTitle("OVERDUE"),
-              ...overdueTodos.map((todo) => _buildTodoItem(todo)),
+              ...overdueTodos.map((todo) => _buildTodoItem(todo)), //setiap todo diubah menjadi widget dengan function _buildTodoItem.
             ],
 
             if (todayTodos.isNotEmpty) ...[
               _buildSectionTitle("TODAY"),
-              ...todayTodos.map((todo) => _buildTodoItem(todo)),
+              ...todayTodos.map((todo) => _buildTodoItem(todo)),//setiap todo diubah menjadi widget dengan function _buildTodoItem.
             ],
 
             if (tomorrowTodos.isNotEmpty) ...[
               _buildSectionTitle("TOMORROW"),
-              ...tomorrowTodos.map((todo) => _buildTodoItem(todo)),
+              ...tomorrowTodos.map((todo) => _buildTodoItem(todo)),//setiap todo diubah menjadi widget dengan function _buildTodoItem.
             ],
 
             if (upcomingTodos.isNotEmpty) ...[
               _buildSectionTitle("UPCOMING"),
-              ...upcomingTodos.map((todo) => _buildTodoItem(todo)),
+              ...upcomingTodos.map((todo) => _buildTodoItem(todo)),//setiap todo diubah menjadi widget dengan function _buildTodoItem.
             ],
 
             if (completedTodos.isNotEmpty) ...[
               _buildSectionTitle("COMPLETED"),
-              ...completedTodos.map((todo) => _buildTodoItem(todo)),
+              ...completedTodos.map((todo) => _buildTodoItem(todo)),//setiap todo diubah menjadi widget dengan function _buildTodoItem.
             ],
 
           ],
@@ -352,7 +353,7 @@ decoration: BoxDecoration(
 )
     );
   }
-  //function list view build section
+  //function list view build section FUNGSI LIST VIEW (UIUX)
   Widget _buildSectionTitle(String title) {
   return Padding(
     padding: EdgeInsets.fromLTRB(16, 20, 16, 8),
@@ -366,33 +367,33 @@ decoration: BoxDecoration(
     ),
   );
 }
-
-//function list view buil to do
+// proses Membuat widget yang menampilkan satu item todo, menerima parameter todo dari list yang sudah digrouping.
+//function membuat tampilan todo dengan list view build to do yg ada di proses gruping to (_buildTodoItem)
 Widget _buildTodoItem(Todo todo) {
-  bool isOverdue =
-      todo.dueDate != null &&
-      todo.dueDate!.isBefore(DateTime.now()) &&
-      !todo.isDone;
+  bool isOverdue = //cek todo udh lewat deadline ga
+      todo.dueDate != null && //pastikan todo ada tanggal jatuh tempo.
+      todo.dueDate!.isBefore(DateTime.now()) && //pastikan tanggalnya sudah lewat sekarang.
+      !todo.isDone; //pastikan belum selesai.
 
-  return Dismissible(
-    key: UniqueKey(),
-    confirmDismiss: (direction) async {
-      if (direction == DismissDirection.startToEnd) {
+  return Dismissible( //membuat widget bisa swipe kiri / kanan untuk hapus atau edit.
+    key: UniqueKey(), //setiap item punya ID unik supaya Flutter bisa track per item saat list berubah.
+    confirmDismiss: (direction) async { //konfirmasi sebelum swipe effect dijalankan.
+      if (direction == DismissDirection.startToEnd) { //kiri ke kanan edit
         _showEditDialog(todo);
         return false;
       }
-      if (direction == DismissDirection.endToStart) {
+      if (direction == DismissDirection.endToStart) { //kanan ke kiri hapus
         return true;
       }
       return false;
-    },
+    }, //bg edit
     background: Container(
       color: Colors.green,
       alignment: Alignment.centerLeft,
       padding: EdgeInsets.only(left: 20),
       child: Icon(Icons.edit, color: Colors.white),
     ),
-    secondaryBackground: Container(
+    secondaryBackground: Container( //bg hapus
       color: Colors.red,
       alignment: Alignment.centerRight,
       padding: EdgeInsets.only(right: 20),
@@ -404,16 +405,16 @@ Widget _buildTodoItem(Todo todo) {
       }
     },
 
-    child: Container(
+    child: Container( //isi konten todo
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-      color: todo.isDone
+      color: todo.isDone //atur warna todo
           ? AppTheme.gradientGreen.withOpacity(0.3)   // completed → hijau tua lebih lembut
           : isOverdue
               ? AppTheme.pressedColor.withOpacity(0.3) // overdue → gelap tapi soft
               : AppTheme.primaryColor.withOpacity(0.2), // aktif → hijau pastel soft
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(12), //mtampilan bg kartu
       boxShadow: [
         BoxShadow(
           color: Colors.black12,
@@ -422,29 +423,29 @@ Widget _buildTodoItem(Todo todo) {
         ),
       ],
     ),
-      child: ListTile(
-        title: Text(
+      child: ListTile( //isi todo dengan list tile
+        title: Text(//judul toto
           todo.title,
           style: TextStyle(
             decoration: todo.isDone ? TextDecoration.lineThrough : null,
           ),
         ),
-        subtitle: todo.dueDate != null
+        subtitle: todo.dueDate != null //tgl jam
             ? Text(
                 DateFormat('dd MMM yyyy HH:mm').format(todo.dueDate!),
                 style: TextStyle(
-                  color: isOverdue ? Colors.red : Colors.grey,
+                  color: isOverdue ? Colors.red : Colors.grey, //kalo verdue merah, ga merah
                 ),
               )
             : null,
-        leading: Checkbox(
+        leading: Checkbox( //checkbox 
           value: todo.isDone,
           onChanged: (value) {
             todo.isDone = value ?? false;
-            _todoService.updateTodo(user!.uid, todo);
+            _todoService.updateTodo(user!.uid, todo); //Jika diubah, update status isDone di Firestore.
           },
         ),
-        trailing: IconButton(
+        trailing: IconButton(//btn hapus di kanan
           icon: Icon(Icons.delete),
           onPressed: () {
             _showDeleteDialog(todo);
@@ -455,7 +456,7 @@ Widget _buildTodoItem(Todo todo) {
   );
 }
 
-void _showDeleteDialog(Todo todo) {
+void _showDeleteDialog(Todo todo) { //fungsi hapus toto
 
   showDialog(
     context: context,
