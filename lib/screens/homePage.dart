@@ -11,11 +11,11 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
-
+//proses inisialisasi
 class _HomePageState extends State<HomePage> {
   final TodoService _todoService = TodoService(); // PROSES akses service To-Do
   final TextEditingController _controller = TextEditingController(); // PROSES ambil input teks To-Do
-  final user = FirebaseAuth.instance.currentUser; // PROSES ambil user login saat ini
+  final user = FirebaseAuth.instance.currentUser; // PROSES ambil data user login saat ini
   DateTime? selectedDate; //untuk sleect tgl
   TimeOfDay? selectedTime; //utk select jam
 
@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: AppTheme.gradientGreen,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false, //ataur btn bck ga muncul otomatis
         title: Text("My To-Do List"),
         actions: [
          IconButton(
@@ -212,7 +212,7 @@ decoration: BoxDecoration(
                   selectedTime!.minute,
                 );
 
-                if (selectedDateTime.isBefore(now)) { //Cek jam yang dipilih tidak boleh lewat dari sekarang.
+                if (selectedDateTime.isBefore(now)) { //intinya mencagah user memilih waktu di masa lalu
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -290,7 +290,7 @@ decoration: BoxDecoration(
             todo.dueDate != null &&
             DateUtils.isSameDay(todo.dueDate, now) &&
             !todo.isDone
-          ).toList();
+          ).toList();//mengambil semua to-do yang memiliki due date hari ini dan belum selesai.
           //Besok
           final tomorrow = now.add(Duration(days: 1));
           
@@ -298,16 +298,17 @@ decoration: BoxDecoration(
           todo.dueDate != null &&
           DateUtils.isSameDay(todo.dueDate, tomorrow) &&
           !todo.isDone
-          ).toList();
+          ).toList(); //mengambil semua to-do yang memiliki due date besok dan belum selesai.
           //Setelah Besok or Upcoming
           final upcomingTodos = todos.where((todo) =>
            todo.dueDate != null &&
            todo.dueDate!.isAfter(tomorrow) &&
            !todo.isDone
-           ).toList();
+           ).toList(); //mengambil semua to-do yang memiliki due date setelah besok dan belum selesai.
 
            // COMPLETED
           final completedTodos = todos.where((todo) => todo.isDone).toList();
+          //mengambil semua to-do yang memiliki sudah selesai.
 
 
           if (todos.isEmpty) {
@@ -320,22 +321,22 @@ decoration: BoxDecoration(
 
             if (overdueTodos.isNotEmpty) ...[ //tampilkan section OVERDUE hanya kalau ada datanya.
               _buildSectionTitle("OVERDUE"),
-              ...overdueTodos.map((todo) => _buildTodoItem(todo)), //setiap todo diubah menjadi widget dengan function _buildTodoItem.
+              ...overdueTodos.map((todo) => _buildTodoItem(todo)), //setiap todo disimpan dalam  function _buildTodoItem.
             ],
 
             if (todayTodos.isNotEmpty) ...[
               _buildSectionTitle("TODAY"),
-              ...todayTodos.map((todo) => _buildTodoItem(todo)),//setiap todo diubah menjadi widget dengan function _buildTodoItem.
+              ...todayTodos.map((todo) => _buildTodoItem(todo)),//setiap todo disimpan dalam  function _buildTodoItem.
             ],
 
             if (tomorrowTodos.isNotEmpty) ...[
               _buildSectionTitle("TOMORROW"),
-              ...tomorrowTodos.map((todo) => _buildTodoItem(todo)),//setiap todo diubah menjadi widget dengan function _buildTodoItem.
+              ...tomorrowTodos.map((todo) => _buildTodoItem(todo)),//setiap todo disimpan dalam  function _buildTodoItem.
             ],
 
             if (upcomingTodos.isNotEmpty) ...[
               _buildSectionTitle("UPCOMING"),
-              ...upcomingTodos.map((todo) => _buildTodoItem(todo)),//setiap todo diubah menjadi widget dengan function _buildTodoItem.
+              ...upcomingTodos.map((todo) => _buildTodoItem(todo)),//setiap todo disimpan dalam  function _buildTodoItem.
             ],
 
             if (completedTodos.isNotEmpty) ...[

@@ -19,15 +19,15 @@ Future<void> main() async {
 //proses hubungin ke firebase
   try {
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,  // config platform
+      options: DefaultFirebaseOptions.currentPlatform,  //konfigurasi dan hubungkan Firebase sesuai platform
     );
     print("Firebase initialized successfully");
   } catch (e, s) {
-    // proses tangkap error Firebase agar app tidak crash
+    // proses tangkap error Firebase agar app tidak crash jika Firebase gagal.
     print("Firebase initialization error: $e");
     print(s);
   }
-// proses jalankan app
+// proses menjalankan widget utama aplikasi.
   runApp(MyApp());
 }
 

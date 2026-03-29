@@ -8,7 +8,7 @@ class SignInPage extends StatefulWidget { //statefull karena ada perubahan state
   @override
   _SignInPageState createState() => _SignInPageState(); //// Membuat state untuk halaman SignIn agar bisa menyimpan data input & status loading
 }
-//state clasa untuk halaman sign in page (semua data bisa berubah disini (email/pw) disimpaan dan dikelola)
+//inisialisai state clasa untuk halaman sign in page (semua data bisa berubah disini (email/pw) disimpaan dan dikelola)
 class _SignInPageState extends State<SignInPage> { //pake state karena statefull
   final _formKey = GlobalKey<FormState>(); //formkey utk validasi email dan pw
   final TextEditingController _controllerEmail = TextEditingController(); //controller email dan pw utk nyimpan input user

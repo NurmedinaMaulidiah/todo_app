@@ -10,7 +10,7 @@ class SignUpPage extends StatefulWidget { //statefull karna ada perubahan dalam 
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
-// State untuk SignUpPage, menyimpan input, loading, dan validasi form
+// inisialisasai State untuk SignUpPage, menyimpan input, loading, dan validasi form
 class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>(); //keyform utk validasi email dan pw
   bool _loading = false;

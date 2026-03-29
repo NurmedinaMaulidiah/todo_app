@@ -19,7 +19,7 @@ class IntroductionPage extends StatelessWidget {
           // LOGO
           Image.asset(
             'assets/logo.png',
-            width: lebar * 0.8, //ukuran responsif
+            width: lebar * 0.8, //ukuran responsif widget akan mengambil 80% dari lebar itu parent.
           ),
 
           SizedBox(height: tinggi * 0.04),
